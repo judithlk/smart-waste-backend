@@ -50,15 +50,8 @@ export const login = async (req: Request, res: Response): Promise<any> => {
       { expiresIn: "7d" }
     );
 
-     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true in prod
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-      sameSite: "lax",
-      path: "/",
-    });
-
     return res.json({
+      token,
       admin: {
         id: admin._id,
         username: admin.username,
@@ -70,6 +63,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     return res.status(500).json({ message: "Login failed", error: err });
   }
 };
+
 
 export const logout = (req: Request, res: Response): any => {
   res.clearCookie("token", {

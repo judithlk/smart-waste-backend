@@ -43,8 +43,8 @@ export const loginPersonnel = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { email, password } = req.body;
-    const person = await Personnel.findOne({ email }).exec();
+    const { personnelId, password } = req.body;
+    const person = await Personnel.findOne({ personnelId }).exec();
     if (!person || !person.password) {
       return res.status(404).json({ message: "Personnel not found" });
     }
@@ -92,3 +92,29 @@ export const updatePersonnel = async (req: Request, res: Response): Promise<any>
     return res.status(500).json({ message: "Update failed", error: err });
   }
 };
+
+export const getAllPersonnel = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const personnelList = await Personnel.find().select("-password"); // exclude passwords
+    return res.json(personnelList);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch personnel", error: err });
+  }
+};
+
+export const getPersonnelById = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const person = await Personnel.findById(id).select("-password");
+
+    if (!person) {
+      return res.status(404).json({ message: "Personnel not found" });
+    }
+
+    return res.json(person);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch personnel", error: err });
+  }
+};
+
+
