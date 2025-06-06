@@ -22,7 +22,7 @@ const mongoURL = process.env.MONGO_URI || "mongodb://localhost:27017/smartbin";
 // Middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000", // frontend URL
+    origin: "http://localhost:3000", // frontend URL
     credentials: true,
   })
 );
