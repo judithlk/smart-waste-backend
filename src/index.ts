@@ -35,7 +35,7 @@ app.use("/api/schedules", scheduleRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 // MongoDB connection
-const mongoURL = process.env.MONGO_URL || "mongodb://localhost:27017/smartbin";
+const mongoURL = process.env.MONGO_URI || "mongodb://localhost:27017/smartbin";
 mongoose
   .connect(mongoURL)
   .then(() => console.log("MongoDB connected"))
