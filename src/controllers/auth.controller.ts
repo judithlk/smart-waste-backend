@@ -65,12 +65,6 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 };
 
 
-export const logout = (req: Request, res: Response): any => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
-  return res.json({ message: "Logged out successfully" });
+export const logout = async (req: Request, res: Response): Promise<any> => {
+  return res.status(200).json({ message: "Logged out" });
 };

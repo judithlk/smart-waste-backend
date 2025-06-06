@@ -39,8 +39,9 @@ export const getBins = async (_req: Request, res: Response): Promise<any> => {
 
 // Get a bin by ID
 export const getBin = async (req: Request, res: Response): Promise<any> => {
+  const { id } = req.params;
   try {
-    const bin = await Bin.findOne({ binId: req.params.id });
+    const bin = await Bin.findById(id);
     if (!bin) return res.status(404).json({ message: "Bin not found" });
 
     return res.json(bin);
@@ -51,12 +52,10 @@ export const getBin = async (req: Request, res: Response): Promise<any> => {
 
 // Update a bin
 export const updateBin = async (req: Request, res: Response): Promise<any> => {
+  const { id } = req.params;
+  const updates = req.body;
   try {
-    const updatedBin = await Bin.findOneAndUpdate(
-      { binId: req.params.id },
-      req.body,
-      { new: true }
-    );
+    const updatedBin = await Bin.findByIdAndUpdate(id, updates, { new: true });
     if (!updatedBin) return res.status(404).json({ message: "Bin not found" });
 
     return res.json({ message: "Bin updated", bin: updatedBin });
@@ -74,15 +73,11 @@ export const updateBinStatus = async (
     const { id } = req.params; // binId
     const { status } = req.body;
 
-    if (!["active", "disabled"].includes(status)) {
+    if (!["online", "offline"].includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    const updatedBin = await Bin.findOneAndUpdate(
-      { binId: id },
-      { status },
-      { new: true }
-    );
+    const updatedBin = await Bin.findById(id, { status }, { new: true });
 
     if (!updatedBin) {
       return res.status(404).json({ message: "Bin not found" });

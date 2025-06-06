@@ -117,4 +117,14 @@ export const getPersonnelById = async (req: Request, res: Response): Promise<any
   }
 };
 
+export const getPersonnelByPersonnelId = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const personnel = await Personnel.findOne({ personnelId: req.params.personnelId });
+    if (!personnel) return res.status(404).json({ message: "Personnel not found" });
+    res.json(personnel);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 

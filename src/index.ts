@@ -8,10 +8,11 @@ import binRoutes from "./routes/bin.routes";
 import historyRoutes from "./routes/history.routes";
 import personnelRoutes from "./routes/personnel.routes";
 import scheduleRoutes from "./routes/schedule.routes";
+import dashboardRoutes from "./routes/dashboard.routes"
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const mongoURL = process.env.DB_STRING || "mongodb://localhost:27017/smartbin";
+const mongoURL = process.env.MONGO_URL || "mongodb://localhost:27017/smartbin";
 
 app.use(
   cors({
@@ -19,6 +20,9 @@ app.use(
     credentials: true,
   })
 );
+app.listen(5000, '0.0.0.0', () => {
+  console.log('Server is running on port 5000');
+});
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -26,6 +30,7 @@ app.use("/api/bins", binRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/personnel", personnelRoutes);
 app.use("/api/schedules", scheduleRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 mongoose
   .connect(mongoURL)
@@ -35,3 +40,5 @@ mongoose
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+module.exports = app;

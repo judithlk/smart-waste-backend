@@ -223,3 +223,26 @@ export const updateScheduleStatus = async (
       .json({ message: "Error updating schedule status", error: err });
   }
 };
+
+// Get a schedule by ID
+export const getScheduleById = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { id } = req.params;
+
+    const schedule = await Schedule.findById(id);
+
+    if (!schedule) {
+      return res.status(404).json({ message: "Schedule not found" });
+    }
+
+    return res.json(schedule);
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching schedule", error: err });
+  }
+};
+
