@@ -23,22 +23,28 @@ const mongoURL = process.env.MONGO_URI || "mongodb://localhost:27017/smartbin";
 
 const allowedOrigins = [
   "http://localhost:3000",
-  process.env.CLIENT_URL, // ⬅️ Add your deployed frontend URL
+  process.env.CLIENT_URL, // This should now be your Vercel frontend URL
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
+      // allow server-to-server or tools like curl/postman (no origin)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       } else {
-        return callback(new Error("Not allowed by CORS"));
+        callback(new Error("Not allowed by CORS"));
       }
-    }, // frontend URL
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // If using cookies or sessions
   })
 );
+
+app.options("*", cors());
+
 app.use(express.json());
 
 // API routes
