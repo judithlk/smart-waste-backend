@@ -23,28 +23,21 @@ const mongoURL = process.env.MONGO_URI || "mongodb://localhost:27017/smartbin";
 
 const allowedOrigins = [
   "http://localhost:3000",
-  process.env.CLIENT_URL, // This should now be your Vercel frontend URL
+  "https://smart-waste-web-one.vercel.app/",
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow server-to-server or tools like curl/postman (no origin)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // If using cookies or sessions
-  })
-);
+const corsOptions = {
+  origin: function (origin: any, callback: any) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Allow cookies
+};
 
-app.options("*", cors());
-
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // API routes
