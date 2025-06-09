@@ -89,7 +89,7 @@ export const createSchedule = async (req: Request, res: Response): Promise<any> 
     await newSchedule.save();
 
     // ✅ STEP 4: Send push notification to personnel
-    const personnel = await Personnel.findById(personnelId);
+    const personnel = await Personnel.findOne({personnelId});
     if (personnel?.pushToken) {
       await sendPushNotification(
         personnel.pushToken,
