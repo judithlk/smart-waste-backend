@@ -26,15 +26,23 @@ const allowedOrigins = [
   "https://smart-waste-web-one.vercel.app",
 ];
 
+
 const corsOptions = {
   origin: function (origin: any, callback: any) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      // Allow mobile apps or web apps from allowedOrigins
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
 };
+
+// const corsOptions = {
+//   origin: (origin:any, callback:any) => {
+//     callback(null, true); // Accept all origins
+//   },
+// };
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -46,6 +54,10 @@ app.use("/api/history", historyRoutes);
 app.use("/api/personnel", personnelRoutes);
 app.use("/api/schedules", scheduleRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Smart Waste Backend is live!");
+});
 
 // MongoDB connection
 mongoose

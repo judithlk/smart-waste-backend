@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Personnel from "../models/Personnel";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -63,7 +63,7 @@ export const loginPersonnel = async (
         name: person.name,
         phone: person.phone,
         email: person.email,
-        role: person.role
+        role: person.role,
       },
     });
   } catch (err) {
@@ -71,7 +71,10 @@ export const loginPersonnel = async (
   }
 };
 
-export const updatePersonnel = async (req: Request, res: Response): Promise<any> => {
+export const updatePersonnel = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { id } = req.params; // MongoDB _id or use personnelId if preferred
     const updates = req.body;
@@ -81,7 +84,9 @@ export const updatePersonnel = async (req: Request, res: Response): Promise<any>
       updates.password = await bcrypt.hash(updates.password, 10);
     }
 
-    const updated = await Personnel.findByIdAndUpdate(id, updates, { new: true });
+    const updated = await Personnel.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
 
     if (!updated) {
       return res.status(404).json({ message: "Personnel not found" });
@@ -93,16 +98,24 @@ export const updatePersonnel = async (req: Request, res: Response): Promise<any>
   }
 };
 
-export const getAllPersonnel = async (req: Request, res: Response): Promise<any> => {
+export const getAllPersonnel = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const personnelList = await Personnel.find().select("-password"); // exclude passwords
     return res.json(personnelList);
   } catch (err) {
-    return res.status(500).json({ message: "Failed to fetch personnel", error: err });
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch personnel", error: err });
   }
 };
 
-export const getPersonnelById = async (req: Request, res: Response): Promise<any> => {
+export const getPersonnelById = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { id } = req.params;
     const person = await Personnel.findById(id).select("-password");
@@ -113,18 +126,42 @@ export const getPersonnelById = async (req: Request, res: Response): Promise<any
 
     return res.json(person);
   } catch (err) {
-    return res.status(500).json({ message: "Failed to fetch personnel", error: err });
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch personnel", error: err });
   }
 };
 
-export const getPersonnelByPersonnelId = async (req: Request, res: Response): Promise<any> => {
+export const getPersonnelByPersonnelId = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
-    const personnel = await Personnel.findOne({ personnelId: req.params.personnelId });
-    if (!personnel) return res.status(404).json({ message: "Personnel not found" });
+    const personnel = await Personnel.findOne({
+      personnelId: req.params.personnelId,
+    });
+    if (!personnel)
+      return res.status(404).json({ message: "Personnel not found" });
     res.json(personnel);
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
-
+// PATCH /api/personnel/push-token
+export const updatePushToken = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { token } = req.body;
+    const id = req.params; // From JWT
+    const updated = await Personnel.findByIdAndUpdate(id, { pushToken: token });
+    if (!updated) {
+      return res.status(404).json({ message: "Personnel not found" });
+    }
+    res.json({ message: "Push token updated" });
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to update token", error: err });
+  }
+};

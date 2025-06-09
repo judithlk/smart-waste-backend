@@ -16,7 +16,7 @@ router.post('/', authenticateJWT, authorizeRoles('admin', 'superadmin'), createS
 router.get('/', authenticateJWT, authorizeRoles('admin', 'superadmin'), getSchedules);
 router.get('/:id', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), getScheduleById)
 router.put('/:id', authenticateJWT, authorizeRoles('admin', 'superadmin'), updateSchedule);
-router.get('/:personnelId', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), getSchedulesByPersonnelId);
+router.get('/by-personnel/:personnelId', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), getSchedulesByPersonnelId);
 router.patch('/:id/status', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), updateScheduleStatus);
 router.delete('/:id', authenticateJWT, authorizeRoles('admin', 'superadmin'), deleteSchedule);
 

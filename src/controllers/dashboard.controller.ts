@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Bin from "../models/Bin";
 import Schedule from "../models/Schedule";
 import Personnel from "../models/Personnel";
+import History from "../models/History";
 
 export const getDashboardSummary = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -13,7 +14,7 @@ export const getDashboardSummary = async (req: Request, res: Response): Promise<
 
     const registeredPersonnel = await Personnel.countDocuments();
 
-    const tripsCompleted = await Schedule.countDocuments({
+    const tripsCompleted = await History.countDocuments({
       status: "completed",
     });
 

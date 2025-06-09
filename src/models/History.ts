@@ -1,21 +1,30 @@
 import mongoose from 'mongoose';
 
 const historySchema = new mongoose.Schema({
-  binId: { type: String, required: true },
-  location: {
-    lat: Number,
-    lon: Number,
-    address: String
+  scheduleNo: { type: String, unique: true },
+  bins: [
+    {
+      binId: String,
+      location: {
+        lat: Number,
+        lon: Number,
+        address: String,
+      },
+    },
+  ],
+  route: {
+    type: Object, // GeoJSON route or encoded polyline
+    default: null,
   },
   personnelId: { type: String, required: true },
   scheduledDate: { type: Date, required: true },
-  createdAt: { type: Date, default: Date.now },
-  status: { 
-    type: String, 
-    enum: ['completed', 'cancelled'], 
-    required: true 
+  createdAt: { type: Date, required: true},
+  markedAt: { type: Date, default: Date.now },
+  createdBy: { type: String, required: true }, // admin username
+  status: {
+    type: String,
+    enum: ["completed", "cancelled"],
   },
-  createdBy: { type: String } // Admin username
 });
 
 export default mongoose.model('History', historySchema);

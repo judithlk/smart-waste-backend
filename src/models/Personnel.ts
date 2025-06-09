@@ -9,7 +9,8 @@ const personnelSchema = new mongoose.Schema({
   role: {
     type: String,
     default: 'personnel'
-  }
+  },
+  pushToken: { type: String, default: null },
 });
 
 export default mongoose.model('Personnel', personnelSchema);
