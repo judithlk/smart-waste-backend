@@ -10,6 +10,7 @@ router.get('/', authenticateJWT, authorizeRoles('admin', 'superadmin'), getAllPe
 router.get('/:id', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), getPersonnelById);
 router.get('/by-personnel-id/:personnelId', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), getPersonnelByPersonnelId);
 router.post('/login', loginPersonnel);
-router.patch('/push-token/:id', updatePushToken);
+router.post('/push-token', authenticateJWT, authorizeRoles('personnel'), updatePushToken);
+
 
 export default router;

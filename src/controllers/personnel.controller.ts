@@ -155,7 +155,7 @@ export const updatePushToken = async (
 ): Promise<any> => {
   try {
     const { token } = req.body;
-    const id = req.params; // From JWT
+    const id = req.user?.id; // From JWT
     const updated = await Personnel.findByIdAndUpdate(id, { pushToken: token });
     if (!updated) {
       return res.status(404).json({ message: "Personnel not found" });
