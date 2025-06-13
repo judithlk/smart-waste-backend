@@ -24,7 +24,6 @@ const mongoURL = process.env.MONGO_URI || "mongodb://localhost:27017/smartbin";
 const allowedOrigins = [
   "http://localhost:3000",
   "https://smart-waste-web-one.vercel.app",
-  "https://sm-proxy.onrender.com",
 ];
 
 
