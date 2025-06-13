@@ -52,17 +52,26 @@ export const getBin = async (req: Request, res: Response): Promise<any> => {
 
 // Update a bin
 export const updateBin = async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+  // const { id } = req.params; // This will be the binId, e.g., "BIN005"
   const updates = req.body;
+
   try {
-    const updatedBin = await Bin.findByIdAndUpdate(id, updates, { new: true });
-    if (!updatedBin) return res.status(404).json({ message: "Bin not found" });
+    const updatedBin = await Bin.findOneAndUpdate(
+      { binId: req.params.binId },  
+      updates,
+      { new: true }
+    );
+
+    if (!updatedBin) {
+      return res.status(404).json({ message: "Bin not found" });
+    }
 
     return res.json({ message: "Bin updated", bin: updatedBin });
   } catch (err) {
     return res.status(500).json({ message: "Error updating bin", error: err });
   }
 };
+
 
 //Update status of a bin
 export const updateBinStatus = async (

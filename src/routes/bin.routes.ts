@@ -12,7 +12,7 @@ import { authenticateJWT, authorizeRoles } from '../middleware/auth.middleware';
 const router = express.Router();
 
 router.post('/', authenticateJWT, authorizeRoles('admin', 'superadmin'), createBin);
-router.put('/:id', authenticateJWT, authorizeRoles('admin', 'superadmin'), updateBin);
+router.put('/by-binId/:binId', updateBin);
 router.patch('/:id/status', authenticateJWT, authorizeRoles('admin', 'superadmin', 'personnel'), updateBinStatus);
 router.delete('/:id', authenticateJWT, authorizeRoles('admin', 'superadmin'), deleteBin);
 router.get('/', authenticateJWT, authorizeRoles('admin', 'superadmin'), getBins);
