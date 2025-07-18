@@ -9,8 +9,33 @@ import axios from "axios";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Create new schedule
-export const createSchedule = async (req: Request, res: Response): Promise<any> => {
+// ⬇️ Snap-to-road helper (non-intrusive addition)
+const snapToRoad = async (
+  lon: number,
+  lat: number
+): Promise<[number, number]> => {
+  try {
+    const res = await axios.get(`https://api.openrouteservice.org/nearest`, {
+      params: {
+        api_key: process.env.ORS_API_KEY!,
+        point: `${lon},${lat}`,
+        number: 1,
+      },
+    });
+    return res.data?.coordinates?.[0] || [lon, lat];
+  } catch (err: any) {
+    console.error(err.response?.data || err);
+    return res.status(500).json({
+      message: "Error creating optimized schedule",
+      error: err.response?.data || err.message,
+    });
+  }
+};
+
+export const createSchedule = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { binIds, personnelId, scheduledDate, createdBy } = req.body;
 
@@ -26,22 +51,28 @@ export const createSchedule = async (req: Request, res: Response): Promise<any> 
       return res.status(404).json({ message: "Some bins were not found." });
     }
 
-    const officeLocation = {
-      lon: 8.49,
-      lat: 4.61,
-    };
+    // ⬇️ Snap office location
+    const [snappedLon, snappedLat] = await snapToRoad(8.49, 4.61);
 
-    const jobs = bins.map((bin, index) => ({
+    // ⬇️ Snap each bin location to the road network
+    const snappedBins = await Promise.all(
+      bins.map(async (bin) => {
+        const [lon, lat] = await snapToRoad(bin.location.lon, bin.location.lat);
+        return { ...bin, snappedLocation: [lon, lat] };
+      })
+    );
+
+    const jobs = snappedBins.map((bin, index) => ({
       id: index + 1,
       service: 300,
-      location: [bin.location.lon, bin.location.lat],
+      location: bin.snappedLocation,
     }));
 
     const vehicle = {
       id: 1,
       profile: "driving-car",
-      start: [officeLocation.lon, officeLocation.lat],
-      end: [officeLocation.lon, officeLocation.lat],
+      start: [snappedLon, snappedLat],
+      end: [snappedLon, snappedLat],
     };
 
     const orsResponse = await axios.post(
@@ -88,8 +119,7 @@ export const createSchedule = async (req: Request, res: Response): Promise<any> 
 
     await newSchedule.save();
 
-    // ✅ STEP 4: Send push notification to personnel
-    const personnel = await Personnel.findOne({personnelId});
+    const personnel = await Personnel.findOne({ personnelId });
     if (personnel?.pushToken) {
       await sendPushNotification(
         personnel.pushToken,
@@ -110,7 +140,6 @@ export const createSchedule = async (req: Request, res: Response): Promise<any> 
     });
   }
 };
-
 
 // Get all schedules
 export const getSchedules = async (
@@ -246,8 +275,6 @@ export const updateScheduleStatus = async (
   }
 };
 
-
-
 // Get a schedule by ID
 export const getScheduleById = async (
   req: Request,
@@ -269,4 +296,3 @@ export const getScheduleById = async (
       .json({ message: "Error fetching schedule", error: err });
   }
 };
-
