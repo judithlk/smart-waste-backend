@@ -10,32 +10,26 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // ⬇️ Snap-to-road helper (non-intrusive addition)
-const snapToRoad = async (
-  lon: number,
-  lat: number
-): Promise<[number, number]> => {
+const snapToRoad = async (lon: number, lat: number): Promise<[number, number]> => {
   try {
-    const res = await axios.get(`https://api.openrouteservice.org/nearest`, {
-      params: {
-        api_key: process.env.ORS_API_KEY!,
-        point: `${lon},${lat}`,
-        number: 1,
-      },
-    });
+    const res = await axios.get(
+      `https://api.openrouteservice.org/nearest`,
+      {
+        params: {
+          api_key: process.env.ORS_API_KEY!,
+          point: `${lon},${lat}`,
+          number: 1,
+        },
+      }
+    );
     return res.data?.coordinates?.[0] || [lon, lat];
-  } catch (err: any) {
-    console.error(err.response?.data || err);
-    return res.status(500).json({
-      message: "Error creating optimized schedule",
-      error: err.response?.data || err.message,
-    });
+  } catch (e:any) {
+    console.warn("Snap failed for:", lon, lat, e?.response?.data || e.message);
+    return [lon, lat]; // fallback to original
   }
 };
 
-export const createSchedule = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const createSchedule = async (req: Request, res: Response): Promise<any> => {
   try {
     const { binIds, personnelId, scheduledDate, createdBy } = req.body;
 
@@ -140,6 +134,7 @@ export const createSchedule = async (
     });
   }
 };
+
 
 // Get all schedules
 export const getSchedules = async (
@@ -275,6 +270,8 @@ export const updateScheduleStatus = async (
   }
 };
 
+
+
 // Get a schedule by ID
 export const getScheduleById = async (
   req: Request,
@@ -296,3 +293,4 @@ export const getScheduleById = async (
       .json({ message: "Error fetching schedule", error: err });
   }
 };
+
