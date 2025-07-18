@@ -52,6 +52,7 @@ export const getBin = async (req: Request, res: Response): Promise<any> => {
 
 // Update a bin
 export const updateBin = async (req: Request, res: Response): Promise<any> => {
+  console.log('✅ Backend PUT /api/bins/by-binId/:binId hit');
   // const { id } = req.params; // This will be the binId, e.g., "BIN005"
   const updates = req.body;
 
