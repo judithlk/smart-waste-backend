@@ -27,8 +27,8 @@ export const createSchedule = async (req: Request, res: Response): Promise<any> 
     }
 
     const officeLocation = {
-      lon: 8.4962,
-      lat: 4.6116,
+      lon: 8.49,
+      lat: 4.61,
     };
 
     const jobs = bins.map((bin, index) => ({
