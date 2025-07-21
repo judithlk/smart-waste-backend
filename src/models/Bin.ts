@@ -12,7 +12,7 @@ const binSchema = new mongoose.Schema({
   status: { type: String, enum: ["online", "offline"], default: "online" },
   fillLevel: {
     type: String,
-    enum: ["empty", "25%", "50%", "75%", "95%", "full"],
+    enum: ["0%", "25%", "50%", "75%", "90%", "100%"],
     default: "empty",
   },
 });

@@ -204,23 +204,40 @@ export const updateScheduleStatus = async (
 
     // Fetch the schedule by ID
     const schedule = await Schedule.findById(id);
-
     if (!schedule) {
       return res.status(404).json({ message: "Schedule not found" });
     }
 
-    // Update status
+    // If status is "completed", update the bins
+    const completionDate = new Date();
+    if (status === "completed") {
+      const updateBinPromises = schedule.bins.map((bin) =>
+        Bin.findOneAndUpdate(
+          { binId: bin.binId },
+          {
+            $set: {
+              lastEmptiedAt: completionDate,
+              fillLevel: "0%", // reset to empty
+            },
+          },
+          { new: true }
+        )
+      );
+      await Promise.all(updateBinPromises);
+    }
+
+    // Update schedule status
     schedule.status = status;
     await schedule.save();
 
     // Build history entry
     const historyData = {
-      scheduleNo: schedule.scheduleNo, // ✅ use original schedule number
+      scheduleNo: schedule.scheduleNo,
       bins: schedule.bins,
       route: schedule.route || null,
       personnelId: schedule.personnelId,
       scheduledDate: schedule.scheduledDate,
-      markedAt: new Date(),
+      markedAt: completionDate,
       createdBy: schedule.createdBy,
       createdAt: schedule.createdAt,
       status,
