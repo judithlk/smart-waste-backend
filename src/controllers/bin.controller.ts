@@ -57,6 +57,7 @@ export const updateBin = async (req: Request, res: Response): Promise<any> => {
   const updates = req.body;
 
   try {
+    updates.lastFillCheck = new Date();
     const updatedBin = await Bin.findOneAndUpdate(
       { binId: req.params.binId },  
       updates,

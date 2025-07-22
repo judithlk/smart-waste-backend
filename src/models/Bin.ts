@@ -9,6 +9,7 @@ const binSchema = new mongoose.Schema({
   },
   placementDate: { type: Date, default: Date.now },
   lastEmptiedAt: { type: Date, default: null },
+  lastFillCheck: { type: Date, default: null },
   status: { type: String, enum: ["online", "offline"], default: "online" },
   fillLevel: {
     type: String,
